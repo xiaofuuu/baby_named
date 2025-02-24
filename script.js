@@ -1,82 +1,97 @@
-document.getElementById('luckyForm').addEventListener('submit', function(e) {
+document.getElementById('nameForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // 获取表单数据
-    const birthdate = new Date(document.getElementById('birthdate').value);
-    const name = document.getElementById('name').value;
-    const budget = document.getElementById('budget').value;
+    const surname = document.getElementById('surname').value;
+    const fatherName = document.getElementById('fatherName').value;
+    const motherName = document.getElementById('motherName').value;
+    const gender = document.getElementById('gender').value;
 
-    // 计算吉利日期（示例算法）
-    const luckyDates = calculateLuckyDates(birthdate, name);
-    const luckyFloors = calculateLuckyFloors(birthdate, budget);
-
-    // 显示结果
-    displayResults(luckyDates, luckyFloors);
+    const names = generateNames(surname, fatherName, motherName, gender);
+    displayResults(names);
 });
 
-function calculateLuckyDates(birthdate, name) {
-    // 简单的示例算法
-    const today = new Date();
-    const luckyDates = [];
-    
-    // 计算生命数字（简化版）
-    const birthDay = birthdate.getDate();
-    const birthMonth = birthdate.getMonth() + 1;
-    const birthYear = birthdate.getFullYear();
-    const lifeNumber = (birthDay + birthMonth + sumDigits(birthYear)) % 9 || 9;
+// 常用字库
+const commonCharacters = {
+    male: {
+        positive: ['宇', '浩', '博', '文', '泽', '天', '明', '永', '志', '鸿'],
+        elegant: ['雅', '致', '诚', '信', '然', '涵', '翰', '海', '德', '轩'],
+        nature: ['山', '川', '木', '林', '风', '云', '星', '晨', '阳', '辰']
+    },
+    female: {
+        positive: ['婷', '静', '雅', '美', '慧', '颖', '芸', '莉', '馨', '怡'],
+        elegant: ['诗', '雨', '梦', '琪', '语', '璐', '瑶', '婉', '清', '韵'],
+        nature: ['芳', '花', '月', '露', '雪', '霜', '春', '夏', '秋', '冬']
+    }
+};
 
-    // 根据生命数字选择未来30天内的吉日
-    for(let i = 0; i < 30; i++) {
-        const futureDate = new Date(today);
-        futureDate.setDate(today.getDate() + i);
-        
-        const dayNumber = (futureDate.getDate() + futureDate.getMonth() + 1 + sumDigits(futureDate.getFullYear())) % 9 || 9;
-        
-        // 如果日期数字与生命数字相合（示例规则）
-        if((dayNumber + lifeNumber) % 3 === 0) {
-            luckyDates.push(futureDate);
+function generateNames(surname, fatherName, motherName, gender) {
+    const names = [];
+    const charSet = commonCharacters[gender];
+    
+    // 从父母名字中提取特征
+    const parentChars = (fatherName + motherName).split('');
+    
+    // 生成5个名字建议
+    for (let i = 0; i < 5; i++) {
+        let name = {
+            characters: surname,
+            meaning: ''
+        };
+
+        // 随机决定用一个字还是两个字
+        const nameLength = Math.random() > 0.3 ? 2 : 1;
+
+        if (nameLength === 1) {
+            // 单字名
+            const category = randomChoice(['positive', 'elegant', 'nature']);
+            const char = randomChoice(charSet[category]);
+            name.characters += char;
+            name.meaning = generateMeaning(char, category);
+        } else {
+            // 双字名
+            const categories = ['positive', 'elegant', 'nature'];
+            const char1 = randomChoice(charSet[randomChoice(categories)]);
+            const char2 = randomChoice(charSet[randomChoice(categories)]);
+            name.characters += char1 + char2;
+            name.meaning = generateMeaning(char1 + char2, 'combined');
         }
+
+        names.push(name);
     }
 
-    return luckyDates.slice(0, 3); // 返回前3个吉日
+    return names;
 }
 
-function calculateLuckyFloors(birthdate, budget) {
-    // 简单的示例算法
-    const birthDay = birthdate.getDate();
-    const luckyFloors = [];
-    
-    // 根据出生日期和预算计算吉利楼层
-    const baseNumber = birthDay % 5 + 1;
-    
-    // 生成3个吉利楼层
-    for(let i = 0; i < 3; i++) {
-        let luckyFloor = (baseNumber + i * 3) % 33;
-        if(luckyFloor === 0) luckyFloor = 33;
-        if(luckyFloor !== 4 && luckyFloor !== 13) { // 避开不吉利的数字
-            luckyFloors.push(luckyFloor);
-        }
-    }
-
-    return luckyFloors;
+function randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
 }
 
-function sumDigits(num) {
-    return num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+function generateMeaning(chars, category) {
+    const meanings = {
+        positive: '寓意积极向上，充满朝气',
+        elegant: '优雅大方，气质非凡',
+        nature: '取自自然，意境优美',
+        combined: '字义相辅相成，和谐统一'
+    };
+
+    return `${chars}：${meanings[category]}`;
 }
 
-function displayResults(luckyDates, luckyFloors) {
+function displayResults(names) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `
-        <h3>您的购房吉日推荐：</h3>
-        <p class="lucky-date">
-            ${luckyDates.map(date => date.toLocaleDateString('zh-CN')).join('<br>')}
-        </p>
-        <h3>建议选择的楼层：</h3>
-        <p class="lucky-floor">
-            ${luckyFloors.join('层, ')}层
-        </p>
-        <p><small>* 本计算结果仅供娱乐参考，请理性购房</small></p>
-    `;
+    let html = '<h3>为您推荐以下名字：</h3>';
+    
+    names.forEach(name => {
+        html += `
+            <div class="name-card">
+                <div class="name-characters">${name.characters}</div>
+                <div class="name-meaning">${name.meaning}</div>
+            </div>
+        `;
+    });
+    
+    html += '<p><small>* 本程序生成的名字仅供参考，建议咨询专业起名老师</small></p>';
+    
+    resultDiv.innerHTML = html;
     resultDiv.classList.add('show');
 } 

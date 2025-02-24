@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>购房吉日计算器</title>
+    <title>宝宝起名助手</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>购房吉日计算器</h1>
+        <h1>宝宝起名助手</h1>
         <div class="input-section">
-            <form id="luckyForm">
+            <form id="nameForm">
                 <div class="form-group">
-                    <label for="birthdate">您的出生日期：</label>
-                    <input type="date" id="birthdate" required>
+                    <label for="surname">宝宝姓氏：</label>
+                    <input type="text" id="surname" required maxlength="1" placeholder="请输入姓氏">
                 </div>
                 <div class="form-group">
-                    <label for="name">您的姓名：</label>
-                    <input type="text" id="name" required>
+                    <label for="fatherName">父亲全名：</label>
+                    <input type="text" id="fatherName" required placeholder="请输入父亲全名">
                 </div>
                 <div class="form-group">
-                    <label for="budget">预算范围（万元）：</label>
-                    <input type="number" id="budget" required min="1">
+                    <label for="motherName">母亲全名：</label>
+                    <input type="text" id="motherName" required placeholder="请输入母亲全名">
                 </div>
-                <button type="submit">计算吉日</button>
+                <div class="form-group">
+                    <label for="gender">宝宝性别：</label>
+                    <select id="gender" required>
+                        <option value="male">男宝宝</option>
+                        <option value="female">女宝宝</option>
+                    </select>
+                </div>
+                <button type="submit">生成名字</button>
             </form>
         </div>
         <div class="result-section" id="result">
